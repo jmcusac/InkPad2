@@ -222,14 +222,26 @@ NSString *WDInvalidPropertiesKey = @"WDInvalidPropertiesKey";
     if ([property isEqualToString:WDFillProperty]) {
         // want to track the default color and gradient
         if ([value isKindOfClass:[WDColor class]]) {
-            defaults_[WDFillColorProperty] = [NSKeyedArchiver archivedDataWithRootObject:value];
+            NSError *error;
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:value
+                                             requiringSecureCoding:NO
+                                                             error:&error];
+            if (data) defaults_[WDFillColorProperty] = data;
         } else if ([value isKindOfClass:[WDGradient class]]) {
-            defaults_[WDFillGradientProperty] = [NSKeyedArchiver archivedDataWithRootObject:value];
+            NSError *error;
+            NSData *data = [NSKeyedArchiver archivedDataWithRootObject:value
+                                             requiringSecureCoding:NO
+                                                             error:&error];
+            if (data) defaults_[WDFillGradientProperty] = data;
         }
     }
     
     if ([property isEqualToString:WDFillProperty] || [property isEqualToString:WDStrokeColorProperty] || [property isEqualToString:WDShadowColorProperty]) {
-        value = [NSKeyedArchiver archivedDataWithRootObject:value];
+        NSError *error;
+        value = [NSKeyedArchiver archivedDataWithRootObject:value
+                                      requiringSecureCoding:NO
+                                                      error:&error];
+        if (!value) return; // Failed to archive
     }
     
     if ([[defaults_ valueForKey:property] isEqual:value]) {
@@ -256,7 +268,7 @@ NSString *WDInvalidPropertiesKey = @"WDInvalidPropertiesKey";
         }
         
         [[NSNotificationCenter defaultCenter] postNotificationName:WDActiveShadowChangedNotification object:self userInfo:nil];
-    } 
+    }
 }
 
 - (id) defaultValueForProperty:(NSString *)property
@@ -271,7 +283,14 @@ NSString *WDInvalidPropertiesKey = @"WDInvalidPropertiesKey";
     
     if ([value isKindOfClass:[NSData class]]) {
         data = (NSData *) value;
-        return [NSKeyedUnarchiver unarchiveObjectWithData:data];
+        NSError *error;
+        // Try to unarchive as NSObject first, then fall back to specific classes if needed
+        id unarchived = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSObject class]
+                                                           fromData:data
+                                                              error:&error];
+        if (unarchived) {
+            return unarchived;
+        }
     }
     
     return value;
