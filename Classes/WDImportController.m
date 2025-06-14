@@ -381,10 +381,12 @@ static NSString * const WDDropboxSubdirectoryMissingNotification = @"WDDropboxSu
 - (NSArray *)toolbarItems
 {
     UIBarButtonItem *flexibleSpaceItem = [UIBarButtonItem flexibleItem];
-    UIBarButtonItem *unlinkButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Unlink Dropbox", @"Unlink Dropbox") style:UIBarButtonItemStyleBordered target:self action:@selector(unlinkDropbox:)];
+    UIBarButtonItem *unlinkButtonItem = [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"Unlink Dropbox", @"Unlink Dropbox")
+                                                                         style:UIBarButtonItemStylePlain
+                                                                        target:self
+                                                                        action:@selector(unlinkDropbox:)];
 
     NSArray *toolbarItems = @[flexibleSpaceItem, unlinkButtonItem];
-
 
     return toolbarItems;
 }

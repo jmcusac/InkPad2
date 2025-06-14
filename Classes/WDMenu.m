@@ -104,7 +104,7 @@
             ix++;
         }
     }
-        
+    
     if (selectedIndex_ != currentIndex) {
         [self setNeedsDisplay];
     }
@@ -146,10 +146,13 @@
 - (void) dismiss
 {
     [self setIndexOfSelectedItem:(-1)];
-
-    [popover_ dismissPopoverAnimated:YES];
     
-    [delegate_ popoverControllerDidDismissPopover:popover_];
+    [popover_ dismissViewControllerAnimated:YES completion:^{
+        // Call delegate after dismissal completes
+        if (delegate_ && [delegate_ respondsToSelector:@selector(menuDidDismiss:)]) {
+            [delegate_ performSelector:@selector(menuDidDismiss:) withObject:self];
+        }
+    }];
 }
 
 @end
