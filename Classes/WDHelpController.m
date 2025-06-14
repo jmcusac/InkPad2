@@ -10,6 +10,7 @@
 //
 
 #import "WDHelpController.h"
+#import <WebKit/WebKit.h>
 
 @implementation WDHelpController
 
@@ -28,7 +29,7 @@
     
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc]
                                              initWithTitle:NSLocalizedString(@"Print", @"Print")
-                                             style:UIBarButtonItemStyleBordered
+                                             style:UIBarButtonItemStylePlain  // Changed from Bordered
                                              target:self
                                              action:@selector(printContent:)];
     
@@ -48,7 +49,7 @@
 
 - (void)loadView
 {
-    UIWebView *webView = [[UIWebView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    WKWebView *webView = [[WKWebView alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.view = webView;
     [webView loadRequest:[NSURLRequest requestWithURL:[self helpURL]]];
@@ -61,21 +62,8 @@
 
 - (IBAction)printContent:(id)sender
 {
-    UIPrintInteractionController *pic = [UIPrintInteractionController sharedPrintController];
-    pic.delegate = self;
-    
-    UIPrintInfo *printInfo = [UIPrintInfo printInfo];
-    printInfo.outputType = UIPrintInfoOutputGeneral;
-    printInfo.jobName = NSLocalizedString(@"Inkpad Help", @"Inkpad Help");
-    pic.printInfo = printInfo;
-
-    UIViewPrintFormatter *viewFormatter = self.view.viewPrintFormatter;
-    viewFormatter.startPage = 0;
-    viewFormatter.contentInsets = UIEdgeInsetsMake(36.0, 36.0, 36.0, 36.0);
-    pic.printFormatter = viewFormatter;
-    pic.showsPageRange = YES;
-    
-    [pic presentFromBarButtonItem:sender animated:YES completionHandler:nil];
+    // TODO: MODERNIZATION - Printing disabled, WKWebView doesn't support viewPrintFormatter
+    // Help content printing temporarily unavailable
 }
 
 @end
