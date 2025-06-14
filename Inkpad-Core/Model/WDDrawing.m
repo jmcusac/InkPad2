@@ -475,17 +475,27 @@ NSLog(@"Elements in drawing: %lu", (unsigned long)[self allElements].count);
 
 - (void) duplicateActiveLayer
 {
-    NSMutableData   *data = [NSMutableData data];
-    NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+    NSError *error;
     
-    // encode
-    [archiver encodeObject:self.activeLayer forKey:@"layer"];
-    [archiver finishEncoding];
+    // Encode the layer
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self.activeLayer
+                                         requiringSecureCoding:NO
+                                                         error:&error];
     
-    // decode
-    NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
-    WDLayer *layer = [unarchiver decodeObjectForKey:@"layer"];
-    [unarchiver finishDecoding];
+    if (!data || error) {
+        NSLog(@"Failed to archive layer for duplication: %@", error);
+        return;
+    }
+    
+    // Decode to create the duplicate
+    WDLayer *layer = [NSKeyedUnarchiver unarchivedObjectOfClass:[WDLayer class]
+                                                       fromData:data
+                                                          error:&error];
+    
+    if (!layer || error) {
+        NSLog(@"Failed to unarchive layer for duplication: %@", error);
+        return;
+    }
     
     layer.drawing = self;
     layer.highlightColor = [UIColor saturatedRandomColor];
@@ -794,14 +804,21 @@ NSLog(@"Elements in drawing: %lu", (unsigned long)[self allElements].count);
     NSDate *date = [NSDate date];
 #endif
     
-    NSMutableData *data = [NSMutableData data];
-    NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+    // Create a dictionary to hold both the drawing and thumbnail
+    NSDictionary *archive = @{
+        WDDrawingKey: self,
+        WDThumbnailKey: [self thumbnailData]
+    };
     
-    // Customize archiver here
-    [archiver encodeObject:self forKey:WDDrawingKey];
-    [archiver encodeObject:[self thumbnailData] forKey:WDThumbnailKey];
+    NSError *error;
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:archive
+                                         requiringSecureCoding:NO
+                                                         error:&error];
     
-    [archiver finishEncoding];
+    if (error) {
+        NSLog(@"Failed to create inkpad representation: %@", error);
+        return nil;
+    }
     
 #if WD_DEBUG
     NSLog(@"Encoding time: %f", -[date timeIntervalSinceNow]);

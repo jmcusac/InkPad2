@@ -54,7 +54,7 @@ NSString *WDDropboxFormatDefault = @"WDDropboxFormatDefault";
 {
     self.title = NSLocalizedString(@"Creating Document...", @"Creating Document...");
     
-    UIActivityIndicatorView *activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+    UIActivityIndicatorView *activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
     UIBarButtonItem *spinner = [[UIBarButtonItem alloc] initWithCustomView:activity];
     self.navigationItem.rightBarButtonItem = spinner;
 

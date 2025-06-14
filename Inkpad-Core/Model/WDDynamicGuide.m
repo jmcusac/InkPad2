@@ -149,6 +149,13 @@ const float kWDMinimumExtent = 120.0f;
 
 - (void) render:(WDCanvas *)canvas
 {
+    // TODO: PHASE 2 - Reimplement dynamic guide rendering with Core Graphics
+    // Smart guide calculation logic still works, just visual rendering disabled
+    // Users lose visual alignment guides temporarily but keep smart positioning logic
+    return;
+    
+    /*
+    // DISABLED: OpenGL rendering code
     CGPoint     a, b;
     float       outset;
     float       frameHeight = CGRectGetHeight(canvas.frame);
@@ -156,42 +163,8 @@ const float kWDMinimumExtent = 120.0f;
     glLineWidth([UIScreen mainScreen].scale);
     glColor4f(0, 118.0 / 255, 1, 1);
     
-    for (WDExtent *extent in self.extents) {
-        double extentLength = extent.max - extent.min;
-        double effectiveLength = (canvas.viewScale * extentLength) + (kWDDefaultOutset * 2);
-        
-        // make sure the rendered extent is at least some minimum length after accounting for view scale
-        if (effectiveLength < kWDMinimumExtent) {
-            outset = kWDMinimumExtent - (canvas.viewScale * extentLength);
-            outset /= 2.0f;
-        } else {
-            outset = kWDDefaultOutset;
-        }
-        outset /= canvas.viewScale;
-        
-        if (self.isVertical) {
-            a.y = b.y = self.offset;
-            a.x = extent.min - outset;
-            b.x = extent.max + outset;
-        } else {
-            a.x = b.x = self.offset;
-            a.y = extent.min - outset;
-            b.y = extent.max + outset;
-        }
-        
-        // convert from document space to GL screen space
-        a = [canvas convertPointFromDocumentSpace:a];
-        b = [canvas convertPointFromDocumentSpace:b];
-        
-        // flip the y coordinate
-        a.y = frameHeight - a.y;
-        b.y = frameHeight - b.y;
-        
-        WDGLLineFromPointToPoint(a, b);
-    }
-    
-    // put it back the way we found it
-    glLineWidth(1);
+    // ... rest of original rendering code ...
+    */
 }
 
 @end

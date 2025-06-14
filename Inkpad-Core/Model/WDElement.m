@@ -239,14 +239,13 @@ NSString *WDShadowKey = @"WDShadowKey";
 }
 
 // OpenGL-based selection rendering
-
 - (void) drawOpenGLAnchorAtPoint:(CGPoint)pt transform:(CGAffineTransform)transform selected:(BOOL)selected
 {
     CGPoint location = WDRoundPoint(CGPointApplyAffineTransform(pt, transform));
     CGRect anchorRect = CGRectMake(location.x - kAnchorRadius, location.y - kAnchorRadius, kAnchorRadius * 2, kAnchorRadius * 2);
     
     if (!selected) {
-        glColor4f(1, 1, 1, 1);
+        //glColor4f(1, 1, 1, 1);
         WDGLFillRect(anchorRect);
         [self.layer.highlightColor openGLSet];
         WDGLStrokeRect(anchorRect);

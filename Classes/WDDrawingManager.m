@@ -451,12 +451,21 @@ NSString *WDDrawingNewFilenameKey = @"WDDrawingNewFilenameKey";
     NSData              *thumbData = nil;
     
     if ([name hasSuffix:WDDrawingFileExtension]) {
-        NSData              *data = [NSData dataWithContentsOfFile:archivePath]; 
-        NSKeyedUnarchiver   *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+        NSData *data = [NSData dataWithContentsOfFile:archivePath];
+        NSError *error;
         
-        thumbData = [unarchiver decodeObjectForKey:WDThumbnailKey];
+        // Try to unarchive the complete drawing file and extract thumbnail
+        NSDictionary *archive = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSDictionary class], [NSData class], nil]
+                                                                    fromData:data
+                                                                       error:&error];
+        thumbData = archive[WDThumbnailKey];
         
-        [unarchiver finishDecoding]; 
+        // Fallback: try direct thumbnail extraction if the above fails
+        if (!thumbData && !error) {
+            thumbData = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSData class]
+                                                          fromData:data
+                                                             error:&error];
+        }
     } else if ([name hasSuffix:WDSVGFileExtension]) {
         NSXMLParser *xmlParser = [[NSXMLParser alloc] initWithContentsOfURL:[NSURL fileURLWithPath:archivePath]];
         WDSVGThumbnailExtractor *extractor = [[WDSVGThumbnailExtractor alloc] init];

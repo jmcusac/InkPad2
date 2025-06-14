@@ -321,10 +321,10 @@ NSString *WDPointArrayKey = @"WDPointArrayKey";
     } else if (mode == kWDBezierNodeRenderSelected) {
         [color openGLSet];
         WDGLFillRect(anchorRect);
-        glColor4f(1, 1, 1, 1);
+        //glColor4f(1, 1, 1, 1);
         WDGLStrokeRect(anchorRect);
     } else {
-        glColor4f(1, 1, 1, 1);
+        //glColor4f(1, 1, 1, 1);
         WDGLFillRect(anchorRect);
         [color openGLSet];
         WDGLStrokeRect(anchorRect);

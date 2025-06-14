@@ -51,29 +51,46 @@ static NSString *errorDomain = @"WDDocument";
 
 - (BOOL) loadFromInkpad:(id)contents error:(NSError **)outError
 {
-    NSKeyedUnarchiver   *unarchiver = nil;
-    BOOL                success = NO;
+    BOOL success = NO;
     
     @try {
-        unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:contents]; 
+        NSError *error;
         
         if (self.loadOnlyThumbnail) {
-            self.thumbnail = [UIImage imageWithData:[unarchiver decodeObjectForKey:WDThumbnailKey]];
+            // Extract just the thumbnail data
+            NSDictionary *archive = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSDictionary class], [NSData class], nil]
+                                                                        fromData:contents
+                                                                           error:&error];
+            NSData *thumbData = archive[WDThumbnailKey];
+            if (thumbData) {
+                self.thumbnail = [UIImage imageWithData:thumbData];
+            }
         } else {
-            self.drawing = [unarchiver decodeObjectForKey:WDDrawingKey];
-            self.undoManager = self.drawing.undoManager;
+            // Load the full drawing
+            NSDictionary *archive = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSDictionary class], [WDDrawing class], nil]
+                                                                        fromData:contents
+                                                                           error:&error];
+            self.drawing = archive[WDDrawingKey];
+            if (self.drawing) {
+                self.undoManager = self.drawing.undoManager;
+            }
         }
         
-        [unarchiver finishDecoding];
-        
         success = (self.thumbnail || self.drawing) ? YES : NO;
+        
+        if (!success && error && outError) {
+            *outError = error;
+        }
     }
     @catch (NSException *exception) {
-        NSLog(@"Caught %@: %@", [exception name], [exception reason]); 
+        NSLog(@"Caught %@: %@", [exception name], [exception reason]);
         success = NO;
-    }
-    @finally {
-        unarchiver = nil;
+        
+        if (outError) {
+            *outError = [NSError errorWithDomain:@"InkpadLoadError"
+                                            code:1001
+                                        userInfo:@{NSLocalizedDescriptionKey: [exception reason]}];
+        }
     }
     
     return success;
@@ -156,10 +173,10 @@ static NSString *errorDomain = @"WDDocument";
         }
         return NO;
     }
-
+    
     if (!(*outError) && (thumbnail_ || self.drawing)) {
         dispatch_async(dispatch_get_main_queue(), ^{ 
-           [[NSNotificationCenter defaultCenter] postNotificationName:WDDocumentDidLoadNotification object:self userInfo:nil];
+            [[NSNotificationCenter defaultCenter] postNotificationName:WDDocumentDidLoadNotification object:self userInfo:nil];
         });
         return YES;
     } else {

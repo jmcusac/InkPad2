@@ -688,8 +688,6 @@ NSString *WDSelectionChangedNotification = @"WDSelectionChangedNotification";
 
 - (void) copyToPasteboard:(id)pb
 {
-    NSMutableData       *data = [NSMutableData data]; 
-    NSKeyedArchiver     *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
     NSArray             *selection = [self orderedSelectedObjects];
     NSMutableDictionary  *pbItems = [NSMutableDictionary dictionary];
     
@@ -698,9 +696,17 @@ NSString *WDSelectionChangedNotification = @"WDSelectionChangedNotification";
         pbItems[(NSString *)kUTTypePNG] = UIImagePNGRepresentation(image);
     }
     
-    [archiver encodeObject:selection forKey:@"WDElements"]; 
-    [archiver finishEncoding]; 
-    pbItems[WDPasteboardDataType] = data;
+    // Archive the selection for internal paste operations
+    NSError *error;
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:@{@"WDElements": selection}
+                                         requiringSecureCoding:NO
+                                                         error:&error];
+    
+    if (data && !error) {
+        pbItems[WDPasteboardDataType] = data;
+    } else {
+        NSLog(@"Failed to archive selection for pasteboard: %@", error);
+    }
 
 #if TARGET_OS_IPHONE
     ((UIPasteboard *)pb).items = @[pbItems];
@@ -755,13 +761,22 @@ NSString *WDSelectionChangedNotification = @"WDSelectionChangedNotification";
     
     if ([pb containsPasteboardTypes:@[WDPasteboardDataType]]) {
         NSData *data = [pb dataForPasteboardType:WDPasteboardDataType];
-        NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data]; 
-        NSArray *toPaste = [unarchiver decodeObjectForKey:@"WDElements"];
-        [unarchiver finishDecoding]; 
+        NSError *error;
         
-        [self selectNone:nil];
-        [layer addObjects:toPaste];
-        [self selectObjects:toPaste];
+        // Unarchive the dictionary containing the elements
+        NSDictionary *archive = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSDictionary class], [NSArray class], [WDElement class], nil]
+                                                                    fromData:data
+                                                                       error:&error];
+        
+        NSArray *toPaste = archive[@"WDElements"];
+        
+        if (toPaste && !error) {
+            [self selectNone:nil];
+            [layer addObjects:toPaste];
+            [self selectObjects:toPaste];
+        } else {
+            NSLog(@"Failed to unarchive pasteboard data: %@", error);
+        }
     } else if (pb.images) {
         for (UIImage *image in pb.images) {
             [self placeImage:image];
