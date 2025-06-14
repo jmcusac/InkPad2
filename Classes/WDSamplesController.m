@@ -90,11 +90,19 @@ const NSInteger kThumbnailPadding = 12;
     UIImage *thumbnail = (self.cachedThumbnails)[sampleURL.path];
     
     if (!thumbnail) {
-        NSData              *data = [NSData dataWithContentsOfURL:sampleURL]; 
-        NSKeyedUnarchiver   *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
-        NSData              *thumbData = [unarchiver decodeObjectForKey:WDThumbnailKey];
-        
-        [unarchiver finishDecoding];
+        NSData *data = [NSData dataWithContentsOfURL:sampleURL];
+        NSError *error;
+        NSData *thumbData = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSData class]
+                                                              fromData:data
+                                                                 error:&error];
+
+        // If the new method fails, try loading the whole archive and extracting the thumbnail
+        if (!thumbData && !error) {
+            NSDictionary *archive = [NSKeyedUnarchiver unarchivedObjectOfClasses:[NSSet setWithObjects:[NSDictionary class], [NSData class], nil]
+                                                                        fromData:data
+                                                                           error:&error];
+            thumbData = archive[WDThumbnailKey];
+        }
         
         UIImage *image = [[UIImage alloc] initWithData:thumbData];
         

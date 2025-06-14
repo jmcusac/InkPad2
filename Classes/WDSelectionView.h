@@ -29,7 +29,7 @@
 }
 
 @property (nonatomic, weak) WDCanvas *canvas;
-@property (nonatomic, strong) EAGLContext *context;
+//@property (nonatomic, strong) EAGLContext *context;
 @property (weak, nonatomic, readonly) WDDrawing *drawing;
 
 - (void) drawView;

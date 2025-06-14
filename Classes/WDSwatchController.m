@@ -72,7 +72,10 @@ NSString *WDSwatchPanelModeKey = @"WDSwatchPanelModeKey";
 
     // attempt to load archived swatches
     if ([defaults objectForKey:WDSwatches]) {
-        loadedSwatches = [NSKeyedUnarchiver unarchiveObjectWithData:[defaults objectForKey:WDSwatches]];
+        NSError *error;
+        loadedSwatches = [NSKeyedUnarchiver unarchivedObjectOfClass:[NSMutableArray class]
+                                                           fromData:[defaults objectForKey:WDSwatches]
+                                                              error:&error];
     }
     
     if (!loadedSwatches) {
@@ -117,8 +120,13 @@ NSString *WDSwatchPanelModeKey = @"WDSwatchPanelModeKey";
 
 - (void) saveSwatches
 {
-    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self.swatches];
-    [[NSUserDefaults standardUserDefaults] setObject:data forKey:WDSwatches];
+    NSError *error;
+    NSData *data = [NSKeyedArchiver archivedDataWithRootObject:self.swatches
+                                         requiringSecureCoding:NO
+                                                         error:&error];
+    if (data && !error) {
+        [[NSUserDefaults standardUserDefaults] setObject:data forKey:WDSwatches];
+    }
 }
 
 - (void) addSwatch:(id<WDPathPainter>)swatch

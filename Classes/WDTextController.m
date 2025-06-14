@@ -30,7 +30,7 @@
     
     return self;
 }
- 
+
 - (NSString *) text
 {
     return text_.text;
@@ -63,7 +63,7 @@
     text_.text = text.text;
     
     UIFont  *font = [UIFont fontWithName:text.fontName size:kEditingTextSize];
-
+    
     if (!font) {
         // must be a user installed font
         font = [UIFont systemFontOfSize:kEditingTextSize];
@@ -72,11 +72,15 @@
     text_.font = font;
 }
 
-- (void) selectAll
-{
+- (void) selectAll {
     [text_ selectAll:self];
-    [UIMenuController sharedMenuController].menuVisible = NO;
+    
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+    [[UIMenuController sharedMenuController] setMenuVisible:NO animated:NO];
+#pragma clang diagnostic pop
 }
+
 
 - (void)viewDidLoad
 {
