@@ -69,7 +69,7 @@ NSString *WDMaskedElementsKey = @"WDMaskedElementsKey";
         // we accidentally archived an empty array instead of nil
         maskedElements_ = nil;
     }
-        
+    
     if ([fill_ transformable] && !fillTransform_) {
         // This object was created before gradient fills were supported on text.
         // For fidelity, convert the fill to a color to simulate the original rendering behavior.
@@ -85,7 +85,7 @@ NSString *WDMaskedElementsKey = @"WDMaskedElementsKey";
 }
 
 - (id) copyWithZone:(NSZone *)zone
-{       
+{
     WDStylable *stylable = [super copyWithZone:zone];
     
     stylable->fill_ = [(id)fill_ copy];
@@ -154,33 +154,38 @@ NSString *WDMaskedElementsKey = @"WDMaskedElementsKey";
 {
     [super setLayer:layer];
     [self.maskedElements makeObjectsPerformSelector:@selector(setLayer:) withObject:layer];
-}    
+}
 
 - (void) drawGradientControlsWithViewTransform:(CGAffineTransform)transform
 {
-    if (![self fillTransform]) {
-        return;
-    }
-    
-    WDFillTransform *fT = displayFillTransform_ ? displayFillTransform_ : [self fillTransform];
-    
-    CGPoint start = fT.start;
-    start = CGPointApplyAffineTransform(start, fT.transform);
-    start = WDRoundPoint(CGPointApplyAffineTransform(start, transform));
-    
-    CGPoint end = fT.end;
-    end = CGPointApplyAffineTransform(end, fT.transform);
-    end = WDRoundPoint(CGPointApplyAffineTransform(end, transform));
-    
-    [self.layer.highlightColor openGLSet];
-    WDGLLineFromPointToPoint(start, end);
-    
-    WDGLFillDiamond(start, kDiamondSize);
-    WDGLFillDiamond(end, kDiamondSize);
-    
-    glColor4f(1, 1, 1, 1);
-    WDGLFillDiamond(start, kDiamondSize - 1);
-    WDGLFillDiamond(end, kDiamondSize - 1);
+    // TODO: Reimplement with Metal/Core Graphics
+    // Temporarily disabled for compilation
+    return;
+    /*
+     if (![self fillTransform]) {
+     return;
+     }
+     
+     WDFillTransform *fT = displayFillTransform_ ? displayFillTransform_ : [self fillTransform];
+     
+     CGPoint start = fT.start;
+     start = CGPointApplyAffineTransform(start, fT.transform);
+     start = WDRoundPoint(CGPointApplyAffineTransform(start, transform));
+     
+     CGPoint end = fT.end;
+     end = CGPointApplyAffineTransform(end, fT.transform);
+     end = WDRoundPoint(CGPointApplyAffineTransform(end, transform));
+     
+     [self.layer.highlightColor openGLSet];
+     WDGLLineFromPointToPoint(start, end);
+     
+     WDGLFillDiamond(start, kDiamondSize);
+     WDGLFillDiamond(end, kDiamondSize);
+     
+     glColor4f(1, 1, 1, 1);
+     WDGLFillDiamond(start, kDiamondSize - 1);
+     WDGLFillDiamond(end, kDiamondSize - 1);
+     */
 }
 
 - (NSSet *) inspectableProperties
@@ -205,7 +210,7 @@ NSString *WDMaskedElementsKey = @"WDMaskedElementsKey";
     if ((!from && to) || (!to && from)) {
         [changedProperties addObject:WDStrokeVisibleProperty];
     }
-
+    
     if (![from.color isEqual:to.color]) {
         [changedProperties addObject:WDStrokeColorProperty];
     }
@@ -242,7 +247,7 @@ NSString *WDMaskedElementsKey = @"WDMaskedElementsKey";
     strokeStyle_ = strokeStyle;
 }
 
-- (void) setStrokeStyle:(WDStrokeStyle *)strokeStyle 
+- (void) setStrokeStyle:(WDStrokeStyle *)strokeStyle
 {
     if ([strokeStyle isEqual:strokeStyle_]) {
         return;
@@ -259,7 +264,7 @@ NSString *WDMaskedElementsKey = @"WDMaskedElementsKey";
     
     [self postDirtyBoundsChange];
     [self propertiesChanged:changedProperties];
-} 
+}
 
 - (void) setFillQuiet:(id<WDPathPainter>)fill
 {
@@ -290,7 +295,7 @@ NSString *WDMaskedElementsKey = @"WDMaskedElementsKey";
     [self cacheDirtyBounds];
     
     [[self.undoManager prepareWithInvocationTarget:self] setFill:fill_];
-
+    
     [self setFillQuiet:fill];
     
     [self postDirtyBoundsChange];
@@ -306,7 +311,7 @@ NSString *WDMaskedElementsKey = @"WDMaskedElementsKey";
     
     if (self.fillTransform && [self.fillTransform isEqual:fillTransform]) {
         return;
-    } 
+    }
     
     [self cacheDirtyBounds];
     [[self.undoManager prepareWithInvocationTarget:self] setFillTransform:fillTransform_];
@@ -316,12 +321,12 @@ NSString *WDMaskedElementsKey = @"WDMaskedElementsKey";
     [self postDirtyBoundsChange];
 }
 
-- (void) setValue:(id)value forProperty:(NSString *)property propertyManager:(WDPropertyManager *)propertyManager 
+- (void) setValue:(id)value forProperty:(NSString *)property propertyManager:(WDPropertyManager *)propertyManager
 {
     if (!value) {
         return;
     }
-        
+    
     WDStrokeStyle *strokeStyle = self.strokeStyle;
     
     static NSSet *strokeProperties = nil;
@@ -500,7 +505,7 @@ NSString *WDMaskedElementsKey = @"WDMaskedElementsKey";
 - (void) addSVGFillAndStrokeAttributes:(WDXMLElement *)element
 {
     [self addSVGFillAttributes:element];
-
+    
     if (self.strokeStyle) {
         [self.strokeStyle addSVGAttributes:element];
     }

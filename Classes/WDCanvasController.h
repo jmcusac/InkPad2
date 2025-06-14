@@ -36,9 +36,7 @@ enum {
     kEmailDrawing
 };
 
-@interface WDCanvasController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate,
-                                                    UIPopoverControllerDelegate, UIDocumentInteractionControllerDelegate>
-{
+@interface WDCanvasController : UIViewController <UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIDocumentInteractionControllerDelegate> {
     WDDocument          *document_;
     WDCanvas            *canvas_;
     NSArray             *editingItems_;
@@ -64,7 +62,7 @@ enum {
     WDMenu              *actionMenu_;
     WDMenu              *visibleMenu_; // pointer to currently active menu
     
-    UIPopoverController *popoverController_;
+    UIViewController *popoverController_;
     
     WDSwatchController  *swatchController_;
     WDStrokeController  *strokeController_;
@@ -88,7 +86,7 @@ enum {
 - (void) hidePopovers;
 
 - (BOOL) shouldDismissPopoverForClassController:(Class)controllerClass insideNavController:(BOOL)insideNav;
-- (UIPopoverController *) runPopoverWithController:(UIViewController *)controller from:(id)sender;
+- (UIViewController *) runPopoverWithController:(UIViewController *)controller from:(id)sender;
 
 - (void) validateMenuItem:(WDMenuItem *)item;
 - (void) validateVisibleMenuItems;

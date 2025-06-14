@@ -714,6 +714,12 @@ done:
 {
     [super drawOpenGLHandlesWithTransform:transform viewTransform:viewTransform];
 
+    // TODO: MODERNIZATION - Text overflow UI handles disabled
+    // OpenGL ES 1.x removed - this affects the visual "+" overflow indicator
+    // Core text creation should still work without these visual handles
+    return;
+    
+    /*
     if (!overflow_ || !CGAffineTransformIsIdentity(transform) || self.displayNodes) {
         return;
     }
@@ -758,6 +764,7 @@ done:
     
     WDGLLineFromPointToPoint(CGPointMake(overflowPoint.x, overflowPoint.y - fudge),
                              CGPointMake(overflowPoint.x, overflowPoint.y + 3));
+     */
 }
 
 - (void) drawTextPathControlsWithViewTransform:(CGAffineTransform)viewTransform viewScale:(float)viewScale
