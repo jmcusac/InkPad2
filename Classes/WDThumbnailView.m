@@ -145,11 +145,31 @@
     }
     
     if (errorMessage) {
-        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:errorMessage delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
-        [alertView show];
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil
+                                                                                 message:errorMessage
+                                                                          preferredStyle:UIAlertControllerStyleAlert];
+        
+        UIAlertAction *okAction = [UIAlertAction actionWithTitle:@"OK"
+                                                           style:UIAlertActionStyleDefault
+                                                         handler:nil];
+        [alertController addAction:okAction];
+        
+        UIViewController *parentVC = [self findViewController];
+        [parentVC presentViewController:alertController animated:YES completion:nil];
         
         [self reloadFilenameFields_];
     }
+}
+
+- (UIViewController *)findViewController {
+    UIResponder *responder = self;
+    while (responder) {
+        if ([responder isKindOfClass:[UIViewController class]]) {
+            return (UIViewController *)responder;
+        }
+        responder = [responder nextResponder];
+    }
+    return nil;
 }
 
 - (void) textEdited:(id)sender
@@ -287,7 +307,8 @@
 - (void) startActivity
 {
     if (self.superview) {
-        activityView_ = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+        activityView_ = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleLarge];
+        activityView_.color = [UIColor whiteColor];  // Set color separately now
         
         // make sure this doesn't look fuzzy
         activityView_.sharpCenter = WDCenterOfRect(imageView_.frame);
