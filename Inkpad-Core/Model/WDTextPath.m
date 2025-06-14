@@ -746,10 +746,10 @@ done:
     if (selected) {
         [color openGLSet];
         WDGLFillRect(overflowRect);
-        glColor4f(1, 1, 1, 1);
+        //glColor4f(1, 1, 1, 1);
         WDGLStrokeRect(overflowRect);
     } else {
-        glColor4f(1, 1, 1, 1);
+        //glColor4f(1, 1, 1, 1);
         WDGLFillRect(overflowRect);
         [color openGLSet];
         WDGLStrokeRect(overflowRect);

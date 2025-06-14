@@ -132,7 +132,7 @@ NSString *WDActivityProgressChangedNotification = @"WDActivityProgressChangedNot
         if (cell == nil) {
             cell = [self freshCellWithIdentifier:cellIdentifier];
             
-            UIActivityIndicatorView *activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+            UIActivityIndicatorView *activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleMedium];
             [cell.contentView addSubview:activity];
             activity.sharpCenter = CGPointMake(21, CGRectGetMidY(cell.contentView.bounds));
             [activity startAnimating];

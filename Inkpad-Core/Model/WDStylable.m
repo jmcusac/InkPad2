@@ -182,7 +182,7 @@ NSString *WDMaskedElementsKey = @"WDMaskedElementsKey";
      WDGLFillDiamond(start, kDiamondSize);
      WDGLFillDiamond(end, kDiamondSize);
      
-     glColor4f(1, 1, 1, 1);
+     //glColor4f(1, 1, 1, 1);
      WDGLFillDiamond(start, kDiamondSize - 1);
      WDGLFillDiamond(end, kDiamondSize - 1);
      */

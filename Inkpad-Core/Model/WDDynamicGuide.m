@@ -161,7 +161,7 @@ const float kWDMinimumExtent = 120.0f;
     float       frameHeight = CGRectGetHeight(canvas.frame);
     
     glLineWidth([UIScreen mainScreen].scale);
-    glColor4f(0, 118.0 / 255, 1, 1);
+    //glColor4f(0, 118.0 / 255, 1, 1);
     
     // ... rest of original rendering code ...
     */

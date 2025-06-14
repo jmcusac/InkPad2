@@ -29,15 +29,12 @@
 @class WDExportController;
 @class OCAViewController;
 
-@interface WDBrowserController : UICollectionViewController <UIActionSheetDelegate,
-                                                             UIPopoverControllerDelegate,
-                                                             DBRestClientDelegate,
-                                                             MFMailComposeViewControllerDelegate,
-                                                             WDImportControllerDelegate,
-                                                             WDSamplesControllerDelegate,
-                                                             UINavigationControllerDelegate,
-                                                             UIImagePickerControllerDelegate,
-                                                             OCADownloaderDelegate>
+@interface WDBrowserController : UICollectionViewController <MFMailComposeViewControllerDelegate,
+                                                         WDImportControllerDelegate,
+                                                         WDSamplesControllerDelegate,
+                                                         UINavigationControllerDelegate,
+                                                         UIImagePickerControllerDelegate,
+                                                         OCADownloaderDelegate>
 {
     NSMutableArray          *toolbarItems_;
     UIBarButtonItem         *emailItem_;
@@ -45,11 +42,12 @@
     UIActivityIndicatorView *activityIndicator_;
     UIBarButtonItem         *activityItem_;
     UIBarButtonItem         *deleteItem_;
-    UIActionSheet           *deleteSheet_;
     
     NSMutableSet            *selectedDrawings_;
     
-    UIPopoverController     *popoverController_;
+    UIAlertController       *deleteAlert_;
+    UIViewController        *popoverController_;
+    
     WDPageSizeController    *pageSizeController_;
     WDExportController      *exportController_;
 	WDImportController		*importController_;
