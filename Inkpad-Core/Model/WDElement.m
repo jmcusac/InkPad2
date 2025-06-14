@@ -416,15 +416,14 @@ NSString *WDShadowKey = @"WDShadowKey";
     [self propertiesChanged:changedProperties];
 }
 
-- (void) setOpacity:(float)opacity
-{
+- (void) setOpacity:(float)opacity {
     if (opacity == opacity_) {
         return;
     }
     
     [self cacheDirtyBounds];
     
-    [[self.undoManager prepareWithInvocationTarget:self] setOpacity:opacity_];
+    [(WDElement *)[self.undoManager prepareWithInvocationTarget:self] setOpacity:opacity_];
     
     opacity_ = WDClamp(0, 1, opacity);
 

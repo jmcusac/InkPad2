@@ -97,8 +97,9 @@ static void release(void *info) {
 @synthesize reversed = reversed_;
 @synthesize indicator = indicator_;
 
-- (void) awakeFromNib
-{
+- (void) awakeFromNib {
+    [super awakeFromNib];
+    
     indicator_ = [WDColorIndicator colorIndicator];
     indicator_.sharpCenter = WDCenterOfRect([self bounds]);
     [self addSubview:indicator_];

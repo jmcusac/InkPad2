@@ -157,7 +157,7 @@ NSString *WDOpacityKey = @"WDOpacityKey";
         return;
     }
     
-    [[[self.drawing undoManager] prepareWithInvocationTarget:self] setOpacity:opacity_];
+    [(WDLayer *)[[self.drawing undoManager] prepareWithInvocationTarget:self] setOpacity:opacity_];
     
     opacity_ = WDClamp(0.0f, 1.0f, opacity);
     

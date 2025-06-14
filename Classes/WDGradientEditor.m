@@ -27,8 +27,9 @@
 @synthesize controller = controller_;
 @synthesize inactive = inactive_;
 
-- (void) awakeFromNib
-{
+- (void) awakeFromNib {
+    [super awakeFromNib];
+    
     indicators_ = [[NSMutableArray alloc] init];
     self.gradient = [WDGradient defaultGradient];
     

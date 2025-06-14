@@ -16,8 +16,9 @@
 
 @synthesize forwardToView = forwardToView_;
 
-- (void) awakeFromNib
-{
+- (void) awakeFromNib {
+    [super awakeFromNib];
+    
     self.opaque = NO;
     self.backgroundColor = nil;
 }
