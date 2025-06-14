@@ -47,8 +47,9 @@
 - (void) dismissSubtoolsAnimated:(BOOL)animated
 {
     if (subtoolsPopover_) {
-        [subtoolsPopover_ dismissPopoverAnimated:animated];
-        subtoolsPopover_ = nil;
+        [subtoolsPopover_ dismissViewControllerAnimated:animated completion:^{
+            subtoolsPopover_ = nil;
+        }];
     }
 }
 
@@ -160,13 +161,6 @@
     }
 }
 
-- (void) popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
-{
-    if (popoverController == subtoolsPopover_) {
-        subtoolsPopover_ = nil;
-    }
-}
-
 - (void) didChooseTool:(WDToolView *)toolView
 {
     [self dismissSubtoolsAnimated:YES];
@@ -184,13 +178,18 @@
         vc.preferredContentSize = subtools.frame.size;
         vc.view = subtools;
         
-        subtoolsPopover_ = [[UIPopoverController alloc] initWithContentViewController:vc];
-        subtoolsPopover_.delegate = self;
+        vc.modalPresentationStyle = UIModalPresentationPopover;
+        
+        UIPopoverPresentationController *popover = vc.popoverPresentationController;
+        popover.sourceView = self;
+        popover.sourceRect = self.bounds;
+        popover.permittedArrowDirections = UIPopoverArrowDirectionAny;
         
         WDToolView *parent = (WDToolView *)self.superview;
-        subtoolsPopover_.passthroughViews = @[self.superview, parent.canvas];
+        popover.passthroughViews = @[self.superview, parent.canvas];
         
-        [subtoolsPopover_ presentPopoverFromRect:self.bounds inView:self permittedArrowDirections:UIPopoverArrowDirectionAny animated:NO];
+        subtoolsPopover_ = vc;
+        [self.window.rootViewController presentViewController:vc animated:NO completion:nil];
     }
 }
 
